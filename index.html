@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>  Smart Course Recommender</title>
+  <!-- ✅ Proper viewport for true mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>📱 Smart Course Recommender · mobile fit</title>
+  <!-- Tailwind + Alpine + fonts (same as original, keep CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
+    /* exact background + overlay from original, no extra overflow */
     html, body {
       margin: 0;
       padding: 0;
@@ -17,12 +20,10 @@
       font-family: 'Inter', sans-serif;
       position: relative;
     }
-
     body {
       background: url('image.jpg') no-repeat center center fixed;
       background-size: cover;
     }
-
     .blurred-overlay {
       position: absolute;
       inset: 0;
@@ -30,64 +31,97 @@
       background: rgba(0, 0, 0, 0.6); /* darken + fade */
       z-index: 1;
     }
-
     .content-wrapper {
       position: relative;
       z-index: 2;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
     }
-
-
-    @keyframes rotateBg {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes glowFade {
+      0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.2); }
+      100% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
     }
-
     .fade-glow {
       animation: glowFade 2.5s ease-in-out infinite alternate;
     }
-
-    @keyframes glowFade {
-      0% {
-        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    /* Fix for extremely small screens: prevent iframe cover from breaking */
+    .chat-iframe-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 280px; /* ensures chat visible even on tiny screen */
+    }
+    /* cover strip exactly over "powered by chatbase" — but we make it dynamic */
+    .cover-powered {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: rgba(0,0,0,0.95); /* darker to blend with overlay, but full black? original used bg-white/100 but that looks odd — improve with solid dark */
+      background: #0f0f0f; 
+      border-bottom-left-radius: 0.75rem;
+      border-bottom-right-radius: 0.75rem;
+      pointer-events: none; /* so iframe remains clickable above strip */
+      z-index: 15;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    /* small screen fine-tuning */
+    @media (max-width: 480px) {
+      .grid-cols-2 {
+        gap: 0.5rem;
       }
-      100% {
-        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+      .text-4xl {
+        font-size: 2rem;
       }
+    }
+    /* ensure navbar mobile menu appears above everything */
+    .mobile-nav-open {
+      z-index: 50;
     }
   </style>
 </head>
 <body class="text-white h-screen relative">
 
-  <!-- Blurred dark overlay over background image -->
+  <!-- Blurred overlay (same) -->
   <div class="blurred-overlay"></div>
 
-  <!-- Rotating animated background for subtle effect -->
-  <div class="animated-bg"></div>
+  <!-- Content with Alpine (same structure but extra care for mobile) -->
+  <div class="content-wrapper" x-data="{ open: false }">
 
-  <!-- Page Content -->
-  <div class="h-full grid grid-rows-[auto_1fr_auto] content-wrapper" x-data="{ open: false }">
-
-    <!-- Navbar -->
-    <header class="bg-black/30 backdrop-blur-md px-6 py-4 shadow flex justify-between items-center">
-      <h1 class="text-xl sm:text-2xl font-extrabold text-yellow-300 tracking-tight">  Smart Recommender</h1>
-      <div class="flex items-center gap-4">
-        <button @click="open = !open" class="sm:hidden focus:outline-none" aria-label="Toggle menu">
+    <!-- Navbar – fully responsive -->
+    <header class="bg-black/30 backdrop-blur-md px-4 sm:px-6 py-4 shadow flex justify-between items-center relative z-30">
+      <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-yellow-300 tracking-tight leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-[70%] sm:max-w-full">
+        📱 Smart Recommender
+      </h1>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <!-- hamburger always visible on mobile, hidden sm:flex for desktop links? original had only mobile button, but we keep same + add simple desktop menu -->
+        <button @click="open = !open" class="sm:hidden focus:outline-none p-1" aria-label="Toggle menu">
           <template x-if="!open">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
               <path d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </template>
           <template x-if="open">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
               <path d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </template>
         </button>
+        <!-- desktop inline nav (hidden on small) -->
+        <nav class="hidden sm:flex gap-4 text-sm font-medium">
+          <a href="# " class="hover:text-yellow-300 transition px-1">Home</a>
+          <a href="#mak" class="hover:text-yellow-300 transition">Makerere</a>
+          <a href="#mubs" class="hover:text-yellow-300 transition">MUBS</a>
+          <a href="#must" class="hover:text-yellow-300 transition">MUST</a>
+          <a href="#info" class="hover:text-yellow-300 transition">Public Univ</a>
+        </nav>
       </div>
 
-      <!-- Mobile Nav -->
+      <!-- Mobile Nav (dropdown) with improved touch sizing -->
       <nav x-show="open" 
            x-transition:enter="transition ease-out duration-300"
            x-transition:enter-start="opacity-0 transform -translate-y-4"
@@ -95,75 +129,120 @@
            x-transition:leave="transition ease-in duration-200"
            x-transition:leave-start="opacity-100 transform translate-y-0"
            x-transition:leave-end="opacity-0 transform -translate-y-4"
-           class="absolute top-full left-0 w-full bg-black/80 px-6 py-4 flex flex-col gap-3 sm:hidden z-20">
-        <a href="# " class="hover:text-yellow-300 transition duration-300"> </a>
-        <a href="#mak" class="hover:text-yellow-300 transition duration-300">Makerere</a>
-        <a href="#mubs" class="hover:text-yellow-300 transition duration-300">MUBS</a>
-        <a href="#must" class="hover:text-yellow-300 transition duration-300">MUST</a>
-        <a href="#info" class="hover:text-yellow-300 transition duration-300">Public Univ Info</a>
+           class="absolute top-full left-0 w-full bg-black/90 backdrop-blur-md px-6 py-5 flex flex-col gap-4 sm:hidden z-50 text-base border-t border-white/10"
+           @click.away="open = false"
+      >
+        <a href="# " class="hover:text-yellow-300 py-2 text-lg" @click="open = false">🏠 Home</a>
+        <a href="#mak" class="hover:text-yellow-300 py-2 text-lg" @click="open = false">📚 Makerere</a>
+        <a href="#mubs" class="hover:text-yellow-300 py-2 text-lg" @click="open = false">💼 MUBS</a>
+        <a href="#must" class="hover:text-yellow-300 py-2 text-lg" @click="open = false">🔬 MUST</a>
+        <a href="#info" class="hover:text-yellow-300 py-2 text-lg" @click="open = false">🏛️ Public Univ Info</a>
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="grid md:grid-cols-2 gap-10 items-center justify-center px-8 py-6 max-w-6xl mx-auto w-full relative">
-      <!-- Left: Text and Actions -->
-      <div class="space-y-8 max-w-md animate__animated animate__fadeInLeft">
-        <h2 class="text-4xl font-extrabold tracking-tight leading-tight">
+    <!-- MAIN CONTENT: fully responsive grid, stacks on small devices -->
+    <main class="grid md:grid-cols-2 gap-6 md:gap-10 items-center justify-center px-4 sm:px-6 md:px-8 py-4 sm:py-6 max-w-6xl mx-auto w-full overflow-y-auto" style="max-height: 100%;">
+      
+      <!-- Left: text & buttons (order first on mobile) -->
+      <div class="space-y-5 sm:space-y-6 max-w-md mx-auto md:mx-0 w-full animate__animated animate__fadeInLeft">
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
           Discover Your <span class="text-yellow-300">Ideal Course</span>
         </h2>
-        <p class="text-base font-medium text-gray-200">Smart suggestions from  AI to help you find the right course and university path.</p>
-        <div class="grid grid-cols-2 gap-4 text-sm font-semibold">
-          <div class="bg-yellow-300 col-span-2 bg-white/10 text-black py-3 px-5 rounded-lg text-center">
-            Apply To
+        <p class="text-sm sm:text-base font-medium text-gray-200">Smart suggestions from AI to help you find the right course and university path.</p>
+        
+        <!-- Apply buttons: grid adjusts for tiny screens -->
+        <div class="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm font-semibold">
+          <div class="bg-yellow-300 col-span-2 bg-white/10 text-black py-2.5 sm:py-3 px-3 rounded-lg text-center font-bold">
+            📝 Apply To
           </div>
-          <a href="https://apply.kyu.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+          <a href="https://apply.kyu.ac.ug/" target="_blank" rel="noopener" class="bg-white/20 hover:bg-white/30 text-white py-2.5 sm:py-3 px-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md backdrop-blur-sm border border-white/10">
             KYU
           </a>
-          <a href="https://apply.mak.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+          <a href="https://apply.mak.ac.ug/" target="_blank" rel="noopener" class="bg-white/20 hover:bg-white/30 text-white py-2.5 sm:py-3 px-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md backdrop-blur-sm border border-white/10">
             MUK
           </a>
-          <a href="https://apply.mubs.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+          <a href="https://apply.mubs.ac.ug/" target="_blank" rel="noopener" class="bg-white/20 hover:bg-white/30 text-white py-2.5 sm:py-3 px-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md backdrop-blur-sm border border-white/10">
             MUBS
           </a>
-          <a href="https://www.must.ac.ug/announcement/call-for-applications-for-august-2025-intake/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+          <a href="https://www.must.ac.ug/announcement/call-for-applications-for-august-2025-intake/" target="_blank" rel="noopener" class="bg-white/20 hover:bg-white/30 text-white py-2.5 sm:py-3 px-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md backdrop-blur-sm border border-white/10">
             MUST
           </a>
         </div>
+        <!-- extra hint for small touch -->
+        <p class="text-xs text-gray-400 block sm:hidden">👇 Swipe down for AI assistant</p>
       </div>
 
-      <!-- Right: AI Chat -->
-       
-      <div class="space-y-2 animate__animated animate__fadeInRight">
-  <div class="text-white text-lg font-semibold text-center">🎓 Talk to  AI - Your Smart Course Assistant</div>
+      <!-- Right: AI Chat area – height flexible, always visible -->
+      <div class="space-y-2 animate__animated animate__fadeInRight w-full mt-2 md:mt-0">
+        <div class="text-white text-base sm:text-lg font-semibold text-center bg-black/20 py-1.5 rounded-full backdrop-blur-sm px-2">
+          🎓 Talk to AI · Smart Assistant
+        </div>
 
-  <div id="ai" class="relative h-[300px] sm:h-[400px] w-full fade-glow border border-white/20 rounded-xl shadow-2xl overflow-hidden">
-    <iframe 
-      src="https://www.chatbase.co/chatbot-iframe/k2eKZEkQBAcYWJXweH5Z8"
-      width="100%" 
-      height="100%"
-      frameborder="0" 
-      allowfullscreen
-      title="AI Course Advisor"
-      class="rounded-xl"
-      loading="lazy"
-      referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>
+        <!-- CHAT CONTAINER: fully responsive with fixed relative height using vh fallback -->
+        <div id="ai" class="relative w-full fade-glow border border-white/20 rounded-xl shadow-2xl overflow-hidden chat-iframe-wrapper" style="height: clamp(300px, 45vh, 420px);">
+          <iframe 
+            src="https://www.chatbase.co/chatbot-iframe/k2eKZEkQBAcYWJXweH5Z8"
+            width="100%" 
+            height="100%"
+            frameborder="0" 
+            allowfullscreen
+            title="AI Course Advisor"
+            class="rounded-xl"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            style="background: transparent;"
+          ></iframe>
 
-    <!-- Cover the "Powered by Chatbase" text -->
-    <div class="absolute bottom-0 left-0 w-full h-8 bg-white/100 rounded-b-xl"></div>
-  </div>
-</div>
-
+          <!-- Cover "Powered by Chatbase" - solid dark strip with responsive height -->
+          <div class="absolute bottom-0 left-0 w-full h-7 sm:h-8 bg-[#0a0a0a] rounded-b-xl border-t border-white/10 z-10"></div>
+        </div>
+        <p class="text-[0.7rem] text-gray-400 text-center">ask anything about courses, univ. requirements</p>
+      </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center py-3 text-xs bg-black/30 text-gray-300 backdrop-blur-sm select-none">
-      &copy; <span id="year"></span>   Smart Course Recommender. All rights reserved.
+    <!-- Footer – year dynamic -->
+    <footer class="text-center py-2 sm:py-3 text-[0.7rem] sm:text-xs bg-black/30 text-gray-300 backdrop-blur-sm select-none border-t border-white/5">
+      &copy; <span id="year"></span>  Smart Course Recommender. All rights reserved.
     </footer>
   </div>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+    // additional: ensure that if user touches outside mobile nav, it closes
+    document.addEventListener('alpine:init', () => {
+      // optional: make overlay click close? but we already have @click.away
+    })
   </script>
+
+  <!-- Fix for any potential iframe covering text on very short screens - already handled -->
+  <style>
+    /* tiny screens: ensure main content scrolls if needed */
+    @media (max-height: 600px) {
+      main {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+      .chat-iframe-wrapper {
+        height: 240px !important;
+      }
+      .text-4xl {
+        font-size: 1.8rem;
+      }
+    }
+    /* for iPhone SE / small phones 320px */
+    @media (max-width: 380px) {
+      .grid-cols-2 a {
+        font-size: 0.7rem;
+        padding: 0.6rem 0.2rem;
+      }
+      h1 {
+        font-size: 1.1rem;
+      }
+    }
+    /* ensure iframe area does not overflow parent */
+    iframe {
+      max-width: 100%;
+    }
+  </style>
 </body>
 </html>
