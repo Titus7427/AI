@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>  Smart Course Recommender</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+    }
+
+    body {
+      background: url('image.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .blurred-overlay {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.6); /* darken + fade */
+      z-index: 1;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 2;
+    }
+
+
+    @keyframes rotateBg {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .fade-glow {
+      animation: glowFade 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowFade {
+      0% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+      }
+    }
+  </style>
+</head>
+<body class="text-white h-screen relative">
+
+  <!-- Blurred dark overlay over background image -->
+  <div class="blurred-overlay"></div>
+
+  <!-- Rotating animated background for subtle effect -->
+  <div class="animated-bg"></div>
+
+  <!-- Page Content -->
+  <div class="h-full grid grid-rows-[auto_1fr_auto] content-wrapper" x-data="{ open: false }">
+
+    <!-- Navbar -->
+    <header class="bg-black/30 backdrop-blur-md px-6 py-4 shadow flex justify-between items-center">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-yellow-300 tracking-tight">  Smart Recommender</h1>
+      <div class="flex items-center gap-4">
+        <button @click="open = !open" class="sm:hidden focus:outline-none" aria-label="Toggle menu">
+          <template x-if="!open">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </template>
+          <template x-if="open">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </template>
+        </button>
+      </div>
+
+      <!-- Mobile Nav -->
+      <nav x-show="open" 
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="opacity-0 transform -translate-y-4"
+           x-transition:enter-end="opacity-100 transform translate-y-0"
+           x-transition:leave="transition ease-in duration-200"
+           x-transition:leave-start="opacity-100 transform translate-y-0"
+           x-transition:leave-end="opacity-0 transform -translate-y-4"
+           class="absolute top-full left-0 w-full bg-black/80 px-6 py-4 flex flex-col gap-3 sm:hidden z-20">
+        <a href="# " class="hover:text-yellow-300 transition duration-300"> </a>
+        <a href="#mak" class="hover:text-yellow-300 transition duration-300">Makerere</a>
+        <a href="#mubs" class="hover:text-yellow-300 transition duration-300">MUBS</a>
+        <a href="#must" class="hover:text-yellow-300 transition duration-300">MUST</a>
+        <a href="#info" class="hover:text-yellow-300 transition duration-300">Public Univ Info</a>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="grid md:grid-cols-2 gap-10 items-center justify-center px-8 py-6 max-w-6xl mx-auto w-full relative">
+      <!-- Left: Text and Actions -->
+      <div class="space-y-8 max-w-md animate__animated animate__fadeInLeft">
+        <h2 class="text-4xl font-extrabold tracking-tight leading-tight">
+          Discover Your <span class="text-yellow-300">Ideal Course</span>
+        </h2>
+        <p class="text-base font-medium text-gray-200">Smart suggestions from  AI to help you find the right course and university path.</p>
+        <div class="grid grid-cols-2 gap-4 text-sm font-semibold">
+          <div class="bg-yellow-300 col-span-2 bg-white/10 text-black py-3 px-5 rounded-lg text-center">
+            Apply To
+          </div>
+          <a href="https://apply.kyu.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+            KYU
+          </a>
+          <a href="https://apply.mak.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+            MUK
+          </a>
+          <a href="https://apply.mubs.ac.ug/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+            MUBS
+          </a>
+          <a href="https://www.must.ac.ug/announcement/call-for-applications-for-august-2025-intake/" class="bg-white/40 text-white py-3 px-5 rounded-lg hover:bg-white/40 transition duration-300 ease-in-out transform hover:scale-105 text-center shadow-md">
+            MUST
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: AI Chat -->
+       
+      <div class="space-y-2 animate__animated animate__fadeInRight">
+  <div class="text-white text-lg font-semibold text-center">🎓 Talk to  AI - Your Smart Course Assistant</div>
+
+  <div id="ai" class="relative h-[300px] sm:h-[400px] w-full fade-glow border border-white/20 rounded-xl shadow-2xl overflow-hidden">
+    <iframe 
+      src="https://www.chatbase.co/chatbot-iframe/k2eKZEkQBAcYWJXweH5Z8"
+      width="100%" 
+      height="100%"
+      frameborder="0" 
+      allowfullscreen
+      title="AI Course Advisor"
+      class="rounded-xl"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+
+    <!-- Cover the "Powered by Chatbase" text -->
+    <div class="absolute bottom-0 left-0 w-full h-8 bg-white/100 rounded-b-xl"></div>
+  </div>
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 text-xs bg-black/30 text-gray-300 backdrop-blur-sm select-none">
+      &copy; <span id="year"></span>   Smart Course Recommender. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
